@@ -1,25 +1,19 @@
-import { graphql } from "react-apollo";
+import { useQuery } from "react-apollo";
 import { getBookQuery } from "../queries/queries";
 
-const BookDetails = (props) => {
-	// console.log(props);
-	const { book } = props.data;
-	if (book)
-		return (
-			<>
-				<h2>{book.name}</h2>
-				<h3>{book.genre}</h3>
-			</>
-		);
-	else return <h2>No book selected</h2>;
+const BookDetails = ({book}) => {
+	const { loading, error, data } = useQuery(getBookQuery, {
+		variables: {
+			name: book,
+		},
+	});
+	if (loading) return <h3>Loading...</h3>;
+	if (error) {
+		console.log(error);
+		return <h3>Error</h3>;
+	}
+	console.log(data);
+	return <h4>Written By {data.book.author}</h4>;
 };
 
-export default graphql(getBookQuery, {
-	options: (props) => {
-		return {
-			variables: {
-				id: props.bookid,
-			},
-		};
-	},
-})(BookDetails);
+export default BookDetails;
